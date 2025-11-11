@@ -3,7 +3,8 @@ import { NODE_ENV } from "../config/serverConfig.js";
 import { AppError } from "../utils/errors.js";
 import { sendError } from "../utils/response.js";
 
-const errorHandler = (err, req, res, next) => {
+const errorHandler = async (err, req, res, next) => {
+
   let customErr = err;
 
   if (!(err instanceof AppError)) {

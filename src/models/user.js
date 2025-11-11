@@ -67,6 +67,14 @@ User.init(
       allowNull: false,
       defaultValue: true,
     },
+    refreshToken: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    lastLogin: {
+      type: DataTypes.DATE,
+      allowNull:true,
+    },
   },
   {
     sequelize,

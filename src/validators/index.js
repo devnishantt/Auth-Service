@@ -1,3 +1,4 @@
+import logger from "../config/loggerConfig.js";
 import { sendError } from "../utils/response.js";
 
 export function validateRequestBody(schema) {

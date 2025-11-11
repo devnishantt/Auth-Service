@@ -18,5 +18,15 @@ export const jwtConfig = {
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || "7d",
   JWT_REFRESH_SECRET:
     process.env.JWT_REFRESH_SECRET || "your-secret-refresh-key",
-  JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_SECRET || "30d",
+  JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || "30d",
+};
+
+export const cookieConfig = {
+  COOKIE_MAX_AGE: Number.parseInt(
+    process.env.COOKIE_MAX_AGE || "604800000",
+    10
+  ),
+  HTTP_ONLY: true,
+  SECURE: process.env.NODE_ENV === "production",
+  sameSite: "strict",
 };

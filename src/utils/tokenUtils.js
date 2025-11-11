@@ -1,30 +1,24 @@
 import jwt from "jsonwebtoken";
 import { UserRepository } from "../repositories/index.js";
-import { jwtConfig } from "../config/serverConfig";
+import { jwtConfig } from "../config/serverConfig.js";
 import {
   ForbiddenError,
   InternalServerError,
   UnauthorizedError,
-} from "./errors";
+} from "./errors.js";
 
 const userRepository = new UserRepository();
 
-export async function generateToken(user) {
-  const payload = {
-    id: user.id,
-    email: user.email,
-    role: user.role,
-  };
-
-  const accessToken = jwt.sign(payload, jwtConfig.JWT_SECRET, {
+export function generateAccessToken(payload) {
+  return jwt.sign(payload, jwtConfig.JWT_SECRET, {
     expiresIn: jwtConfig.JWT_EXPIRES_IN,
   });
+}
 
-  const refreshToken = jwt.sign(payload, jwtConfig.JWT_REFRESH_SECRET, {
+export function generateRefreshToken(payload) {
+  return jwt.sign(payload, jwtConfig.JWT_REFRESH_SECRET, {
     expiresIn: jwtConfig.JWT_REFRESH_EXPIRES_IN,
   });
-
-  return { accessToken, refreshToken };
 }
 
 export async function verifyAccessToken(token) {

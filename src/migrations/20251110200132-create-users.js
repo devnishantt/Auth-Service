@@ -14,24 +14,18 @@ export async function up(queryInterface, Sequelize) {
       type: Sequelize.STRING,
       allowNull: false,
       unique: true,
-      validate: { isEmail: true },
     },
     password: {
       type: Sequelize.STRING,
       allowNull: false,
-      validate: { notEmpty: true },
     },
     firstName: {
       type: Sequelize.STRING,
       allowNull: false,
-      validate: { is: /^[a-zA-Z ]+$/, notEmpty: true },
     },
     lastName: {
       type: Sequelize.STRING,
       allowNull: true,
-      validate: {
-        is: /^[a-zA-Z ]*$/,
-      },
     },
     role: {
       type: Sequelize.ENUM("user", "admin"),
@@ -54,6 +48,15 @@ export async function up(queryInterface, Sequelize) {
       defaultValue: Sequelize.literal(
         "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
       ),
+    },
+    refreshToken: {
+      type: Sequelize.TEXT,
+      allowNull: true,
+    },
+    lastLogin: {
+      type: Sequelize.DATE,
+      defaultValue: null,
+      allowNull: true,
     },
   });
   await queryInterface.addIndex("users", ["email"], {
