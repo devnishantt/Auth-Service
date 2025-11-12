@@ -57,3 +57,48 @@ export async function verifyAccessToken(token) {
     throw new InternalServerError("Error verifying access token");
   }
 }
+
+export async function verifyRefreshToken(token) {
+  try {
+    if (!token) {
+      throw new UnauthorizedError("No token provided");
+    }
+    const decoded = jwt.verify(token, jwtConfig.JWT_REFRESH_SECRET);
+
+    if (!decoded?.id) {
+      throw new UnauthorizedError("Invalid or outdated token");
+    }
+
+    // Support legacy tokens that used `user` instead of `id`
+    // if (decoded && !decoded.id && decoded.user) {
+    //   decoded.id = decoded.user;
+    // }
+
+    if (!decoded || !decoded.id) {
+      throw new UnauthorizedError("Invalid token payload");
+    }
+
+    const user = await userRepository.findById(decoded.id);
+    if (!user) {
+      throw new UnauthorizedError("User not found");
+    }
+    if (!user.isActive) {
+      throw new ForbiddenError("User account is deactivated");
+    }
+
+    return {
+      id: user.id,
+    };
+  } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError) {
+      throw new UnauthorizedError("Invalid or malformed token");
+    }
+    if (error instanceof jwt.TokenExpiredError) {
+      throw new UnauthorizedError("Token has expired");
+    }
+    if (error instanceof UnauthorizedError || error instanceof ForbiddenError) {
+      throw error;
+    }
+    throw new InternalServerError("Error verifying access token");
+  }
+}

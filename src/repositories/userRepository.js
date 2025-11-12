@@ -11,13 +11,13 @@ export default class UserRepository extends BaseRepository {
     return await this.findOne({ email });
   }
 
-  async updateRefreshToken(userId, refreshToken) {
+  async saveRefreshToken(userId, refreshToken) {
     if (!refreshToken) {
       throw new NotFoundError("Refresh token not found!");
     }
-    return await this.update(userId, refreshToken);
+    return await this.update(userId, { refreshToken });
   }
-  
+
   async updateLastLogin(userId) {
     return await this.update(userId, { lastLogin: new Date() });
   }

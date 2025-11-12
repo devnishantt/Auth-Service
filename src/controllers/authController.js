@@ -37,3 +37,20 @@ export const login = asyncHandler(async function (req, res) {
     200
   );
 });
+
+export const refreshAccessToken = asyncHandler(async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  const { newAccessToken, newRefreshToken } =
+    await authService.refreshAccessToken(refreshToken);
+
+  res.cookie("accessToken", newAccessToken, cookieConfig);
+  res.cookie("refreshToken", newRefreshToken, cookieConfig);
+
+  sendSuccess(
+    res,
+    { newAccessToken, newRefreshToken },
+    "Token refreshed successfully",
+    200
+  );
+});

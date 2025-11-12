@@ -1,11 +1,13 @@
 import {
   ConflictError,
   ForbiddenError,
+  NotFoundError,
   UnauthorizedError,
 } from "../utils/errors.js";
 import {
   generateAccessToken,
   generateRefreshToken,
+  verifyRefreshToken,
 } from "../utils/tokenUtils.js";
 
 export default class AuthService {
@@ -36,7 +38,7 @@ export default class AuthService {
     });
     const refreshToken = generateRefreshToken({ id: user.id });
 
-    await this.userRepository.updateRefreshToken(user.id, refreshToken);
+    await this.userRepository.saveRefreshToken(user.id, refreshToken);
 
     return {
       user: user.toJSON(),
@@ -67,16 +69,42 @@ export default class AuthService {
       email: user.email,
       role: user.role,
     });
-    const refreshToken = generateAccessToken({
+    const refreshToken = generateRefreshToken({
       id: user.id,
     });
 
-    await this.userRepository.updateRefreshToken(user.id, refreshToken);
+    await this.userRepository.saveRefreshToken(user.id, refreshToken);
 
     return {
       user: user.toJSON(),
       accessToken,
       refreshToken,
     };
+  }
+
+  async refreshAccessToken(incomingRefreshToken) {
+    if (!incomingRefreshToken) {
+      throw new NotFoundError("Refresh token not found");
+    }
+    const decoded = await verifyRefreshToken(incomingRefreshToken);
+    const user = await this.userRepository.findById(decoded.id);
+    // if(!user){
+    //     throw new UnauthorizedError("Invalid or mismatched refresh token");
+    // }
+
+    if (incomingRefreshToken !== user?.refreshToken) {
+      throw new UnauthorizedError("Invalid or mismatched refresh token");
+    }
+
+    const newAccessToken = generateAccessToken({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
+    const newRefreshToken = generateRefreshToken({ id: user.id });
+
+    await this.userRepository.saveRefreshToken(user.id, newRefreshToken);
+
+    return { newAccessToken, newRefreshToken };
   }
 }
