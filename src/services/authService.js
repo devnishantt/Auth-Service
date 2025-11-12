@@ -124,6 +124,32 @@ export default class AuthService {
 
     await this.userRepository.saveRefreshToken(user.id, null);
 
-    return true
+    return true;
+  }
+
+  async getProfile(userId) {
+    const user = await this.userRepository.findById(userId);
+
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+
+    return user;
+  }
+
+  async changePassword(userId, oldPassword, newPassword) {
+    const user = await this.userRepository.findById(userId);
+
+    const isPasswordValid = await user.comparePassword(oldPassword);
+    if (!isPasswordValid) {
+      throw new UnauthorizedError("Current password is incorrect");
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    await this.userRepository.saveRefreshToken(user.id, null);
+
+    return true;
   }
 }

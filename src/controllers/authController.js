@@ -2,7 +2,7 @@ import { cookieConfig } from "../config/serverConfig.js";
 import { UserRepository } from "../repositories/index.js";
 import AuthService from "../services/authService.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import { sendSuccess } from "../utils/response.js";
+import { sendError, sendSuccess } from "../utils/response.js";
 
 const authService = new AuthService(new UserRepository());
 
@@ -63,4 +63,26 @@ export const logout = asyncHandler(async function (req, res) {
   res.clearCookie("refreshToken");
 
   sendSuccess(res, true, "Logout Successful", 200);
+});
+
+export const getProfile = asyncHandler(
+  asyncHandler(async function (req, res) {
+    const user = await authService.getProfile(req.user.id);
+    sendSuccess(res, user, "Profile retrieved successfully");
+  })
+);
+
+export const changePassword = asyncHandler(async function (req, res) {
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+
+  if (newPassword !== confirmPassword) {
+    sendError(res, "Password do not match", 400);
+  }
+
+  await authService.changePassword(req.user.id, oldPassword, newPassword);
+
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+
+  sendSuccess(res, true, "Password changed successfully");
 });

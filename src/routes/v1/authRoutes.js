@@ -1,7 +1,13 @@
 import { Router } from "express";
 import { validateRequestBody } from "../../validators/index.js";
-import { loginSchema, registerSchema } from "../../validators/authValidator.js";
 import {
+  changePasswordSchema,
+  loginSchema,
+  registerSchema,
+} from "../../validators/authValidator.js";
+import {
+  changePassword,
+  getProfile,
   login,
   logout,
   refreshAccessToken,
@@ -15,4 +21,12 @@ authRouter.post("/register", validateRequestBody(registerSchema), register);
 authRouter.post("/login", validateRequestBody(loginSchema), login);
 authRouter.post("/refresh-token", refreshAccessToken);
 authRouter.post("/logout", authenticate, logout);
+authRouter.get("/profile", authenticate, getProfile);
+
+authRouter.post(
+  "/change-password",
+  authenticate,
+  validateRequestBody(changePasswordSchema),
+  changePassword
+);
 export default authRouter;

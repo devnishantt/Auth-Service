@@ -9,7 +9,7 @@ export function validateRequestBody(schema) {
         result.error.issues?.map((issue) => issue.message) || [];
       logger.warn(`Validation error in request body: ${errMessages}`);
 
-      return sendError(res, `Validation failed`, 400, errMessages);
+      return sendError(res, "Validation Failed", 400, errMessages);
     }
 
     req.body = result.data;
