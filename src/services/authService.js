@@ -107,4 +107,23 @@ export default class AuthService {
 
     return { newAccessToken, newRefreshToken };
   }
+
+  async logout(userId, refreshToken) {
+    if (!refreshToken) {
+      throw new UnauthorizedError("Refresh token is required for logout");
+    }
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+    console.log("servide hu bc", user.refreshToken);
+
+    if (user.refreshToken !== refreshToken) {
+      throw new UnauthorizedError("Invalid refresh token");
+    }
+
+    await this.userRepository.saveRefreshToken(user.id, null);
+
+    return true
+  }
 }

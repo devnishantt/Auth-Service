@@ -74,9 +74,6 @@ export async function verifyRefreshToken(token) {
     //   decoded.id = decoded.user;
     // }
 
-    if (!decoded || !decoded.id) {
-      throw new UnauthorizedError("Invalid token payload");
-    }
 
     const user = await userRepository.findById(decoded.id);
     if (!user) {

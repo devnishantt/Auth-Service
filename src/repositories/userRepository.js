@@ -12,8 +12,8 @@ export default class UserRepository extends BaseRepository {
   }
 
   async saveRefreshToken(userId, refreshToken) {
-    if (!refreshToken) {
-      throw new NotFoundError("Refresh token not found!");
+    if (refreshToken === undefined) {
+      throw new NotFoundError("Refresh token is undefined!");
     }
     return await this.update(userId, { refreshToken });
   }
