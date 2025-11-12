@@ -46,6 +46,28 @@ export const loginSchema = z.object({
   password: z.string({ required_error: "Password is required" }),
 });
 
+export const updateProfileSchema = z.object({
+  firstName: z
+    .string()
+    .min(2, "First name must be at least 2 characters")
+    .max(50, "First name must not exceed 50 characters")
+    .regex(/^[a-zA-Z ]+$/, {
+      message: "First name must contain only alphabetic characters",
+    })
+    .trim()
+    .optional(),
+  lastName: z
+    .string()
+    .min(2, "Last name must be at least 2 characters")
+    .max(50, "Last name must not exceed 50 characters")
+    .regex(/^[a-zA-Z ]*$/, {
+      message: "First name must contain only alphabetic characters",
+    })
+    .trim()
+    .optional(),
+  email: z.string().email("Invalid email address").toLowerCase().optional(),
+});
+
 export const changePasswordSchema = z
   .object({
     oldPassword: z
@@ -71,3 +93,7 @@ export const changePasswordSchema = z
     message: "Password do not match",
     path: ["confirmPassword"],
   });
+
+export const deleteAccountSchema = z.object({
+  password: z.string().min(6, "Password must be at least 6 characters long"),
+});

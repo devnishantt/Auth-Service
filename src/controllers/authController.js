@@ -86,3 +86,16 @@ export const changePassword = asyncHandler(async function (req, res) {
 
   sendSuccess(res, true, "Password changed successfully");
 });
+
+export const updateProfile = asyncHandler(async function (req, res) {
+  const user = await authService.updateProfile(req.user.id, req.body);
+  sendSuccess(res, user, "Profile updated successfully");
+});
+
+export const deleteAccount = asyncHandler(async function (req, res) {
+  await authService.deleteAccount(req.user.id, req.body.password);
+
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+  sendSuccess(res, true, "Account deleted successfully", 200);
+});

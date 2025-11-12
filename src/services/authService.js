@@ -137,6 +137,14 @@ export default class AuthService {
     return user;
   }
 
+  async updateProfile(userId, updateData) {
+    const user = await this.userRepository.update(userId, updateData);
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+    return user.toJSON();
+  }
+
   async changePassword(userId, oldPassword, newPassword) {
     const user = await this.userRepository.findById(userId);
 
@@ -149,6 +157,23 @@ export default class AuthService {
     await user.save();
 
     await this.userRepository.saveRefreshToken(user.id, null);
+
+    return true;
+  }
+
+  async deleteAccount(userId, password) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+    console.log(password)
+
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedError("Invalid password");
+    }
+
+    await this.userRepository.delete(userId);
 
     return true;
   }
